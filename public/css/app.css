@@ -171,6 +171,15 @@ button {
     margin-bottom: 8px;
 }
 
+.filter-form label {
+    min-width: 0;
+}
+
+#sales-month-filter {
+    width: 100%;
+    min-height: 44px;
+}
+
 .filter-input-wrap {
     position: relative;
 }
@@ -432,5 +441,10 @@ body.modal-open {
     .floating-sale-button {
         left: 24px;
         bottom: 22px;
+    }
+
+    .filter-form {
+        grid-template-columns: 190px minmax(0, 1fr);
+        align-items: end;
     }
 }
