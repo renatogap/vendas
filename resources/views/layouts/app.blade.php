@@ -4,7 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ff6b35">
+        <meta name="description" content="Sistema de vendas rapido para registrar consumo por cliente com acompanhamento mensal.">
         <title>@yield('title', 'Vendas')</title>
+        <meta property="og:title" content="@yield('title', 'Vendas')">
+        <meta property="og:description" content="Sistema de vendas rapido para registrar consumo por cliente com acompanhamento mensal.">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:image" content="{{ asset('favicon.svg') }}">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="@yield('title', 'Vendas')">
+        <meta name="twitter:description" content="Sistema de vendas rapido para registrar consumo por cliente com acompanhamento mensal.">
+        <meta name="twitter:image" content="{{ asset('favicon.svg') }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
