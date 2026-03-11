@@ -31,6 +31,7 @@
             @forelse ($vendas as $venda)
                 <article
                     class="sale-item"
+                    data-id="{{ $venda->id }}"
                     data-name="{{ \Illuminate\Support\Str::lower($venda->nome_cliente) }}"
                     data-month="{{ $venda->mes_venda }}"
                     data-amount="{{ number_format((float) $venda->valor_consumo, 2, '.', '') }}"
@@ -42,6 +43,9 @@
                     <div class="sale-meta">
                         <p class="price">R$ {{ number_format((float) $venda->valor_consumo, 2, ',', '.') }}</p>
                         <p class="datetime">{{ $venda->vendido_em->format('d/m/Y H:i') }}</p>
+                        <button type="button" class="delete-sale-btn" data-sale-id="{{ $venda->id }}" aria-label="Remover venda">
+                            <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                        </button>
                     </div>
                 </article>
             @empty
@@ -121,6 +125,8 @@
         const emptyFilterMessage = document.getElementById('empty-filter-message');
         const salesByMonthUrl = "{{ route('vendas.por-mes') }}";
         const salesClientesUrl = "{{ route('vendas.clientes') }}";
+        const salesDeleteBaseUrl = "{{ url('/vendas') }}";
+        const csrfToken = "{{ csrf_token() }}";
         let autocompleteController = null;
 
         const toggleModal = (show) => {
@@ -252,9 +258,10 @@
             updateVisibleCount();
         };
 
-        const prependSaleItem = (venda) => {
+        const createSaleItemElement = (venda) => {
             const item = document.createElement('article');
             item.className = 'sale-item';
+            item.dataset.id = String(venda.id);
             item.dataset.name = venda.nome_cliente.toLowerCase();
             item.dataset.month = venda.mes_venda;
             item.dataset.amount = venda.valor_consumo_numero;
@@ -266,17 +273,24 @@
                 <div class="sale-meta">
                     <p class="price">R$ ${venda.valor_consumo}</p>
                     <p class="datetime">${venda.vendido_em}</p>
+                    <button type="button" class="delete-sale-btn" data-sale-id="${venda.id}" aria-label="Remover venda">
+                        <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                    </button>
                 </div>
             `;
 
-            salesList.prepend(item);
+            return item;
+        };
+
+        const prependSaleItem = (venda) => {
+            salesList.prepend(createSaleItemElement(venda));
         };
 
         const renderSalesList = (vendas) => {
             salesList.innerHTML = '';
 
             vendas.forEach((venda) => {
-                prependSaleItem(venda);
+                salesList.append(createSaleItemElement(venda));
             });
 
             if (vendas.length === 0) {
@@ -342,6 +356,68 @@
         saleModal.addEventListener('click', (event) => {
             if (event.target === saleModal) {
                 toggleModal(false);
+            }
+        });
+
+        salesList.addEventListener('click', async (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+
+            const saleItem = target.closest('.sale-item');
+            if (!saleItem) {
+                return;
+            }
+
+            const button = target.closest('.delete-sale-btn');
+            if (!button) {
+                const isOpen = saleItem.classList.contains('show-delete');
+                salesList.querySelectorAll('.sale-item.show-delete').forEach((item) => {
+                    item.classList.remove('show-delete');
+                });
+
+                if (!isOpen) {
+                    saleItem.classList.add('show-delete');
+                }
+                return;
+            }
+
+            const saleId = button.getAttribute('data-sale-id');
+            if (!saleId) {
+                return;
+            }
+
+            const confirmed = window.confirm('Deseja remover esta venda?');
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${salesDeleteBaseUrl}/${saleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const saleItem = button.closest('.sale-item');
+                if (saleItem) {
+                    saleItem.remove();
+                    applyClientFilter();
+                }
+
+                saleSuccess.textContent = 'Venda removida com sucesso.';
+                saleSuccess.classList.remove('hidden');
+                setTimeout(() => saleSuccess.classList.add('hidden'), 3500);
+            } catch (error) {
+                // Keep UI unchanged if deletion fails.
             }
         });
 

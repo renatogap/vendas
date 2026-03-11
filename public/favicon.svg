@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Vendas">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00a8a8"/>
+      <stop offset="100%" stop-color="#ff6b35"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#f4fbff" stop-opacity="0.94"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="64" fill="url(#bg)"/>
+  <rect x="48" y="40" width="160" height="176" rx="28" fill="url(#card)"/>
+  <rect x="72" y="66" width="112" height="16" rx="8" fill="#d9ebf5"/>
+  <rect x="72" y="96" width="58" height="14" rx="7" fill="#e6f4fb"/>
+  <rect x="72" y="122" width="44" height="14" rx="7" fill="#e6f4fb"/>
+  <rect x="72" y="148" width="32" height="14" rx="7" fill="#e6f4fb"/>
+  <rect x="140" y="92" width="16" height="82" rx="8" fill="#00a8a8"/>
+  <rect x="164" y="118" width="16" height="56" rx="8" fill="#ff6b35"/>
+  <circle cx="190" cy="56" r="22" fill="#12263a"/>
+  <path d="M182 56h16M190 48v16" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

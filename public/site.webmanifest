@@ -1,0 +1,16 @@
+{
+  "name": "Sistema de Vendas",
+  "short_name": "Vendas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5fbff",
+  "theme_color": "#ff6b35",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

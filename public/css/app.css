@@ -280,6 +280,36 @@ button {
     text-align: right;
 }
 
+.delete-sale-btn {
+    margin-top: 8px;
+    border: 1px solid #f2b2a2;
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    color: #b42318;
+    background: #fff1ef;
+    box-shadow: none;
+}
+
+.delete-sale-btn .material-symbols-rounded {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.sale-item.show-delete .delete-sale-btn {
+    display: inline-flex;
+}
+
+.delete-sale-btn:hover {
+    background: #ffe4de;
+    border-color: #ea9080;
+}
+
 .price {
     font-weight: 800;
     color: #0f6d6d;

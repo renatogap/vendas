@@ -41,6 +41,7 @@ class VendaController extends Controller
             return response()->json([
                 'message' => 'Venda registrada com sucesso.',
                 'venda' => [
+                    'id' => $venda->id,
                     'nome_cliente' => $venda->nome_cliente,
                     'mes_venda' => $venda->mes_venda,
                     'valor_consumo' => number_format((float) $venda->valor_consumo, 2, ',', '.'),
@@ -68,6 +69,7 @@ class VendaController extends Controller
             ->get()
             ->map(function (Venda $venda) {
                 return [
+                    'id' => $venda->id,
                     'nome_cliente' => $venda->nome_cliente,
                     'mes_venda' => $venda->mes_venda,
                     'valor_consumo' => number_format((float) $venda->valor_consumo, 2, ',', '.'),
@@ -102,5 +104,22 @@ class VendaController extends Controller
         return response()->json([
             'nomes' => $nomes,
         ]);
+    }
+
+    public function destroy(Request $request, Venda $venda): RedirectResponse|JsonResponse
+    {
+        $id = $venda->id;
+        $venda->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Venda removida com sucesso.',
+                'id' => $id,
+            ]);
+        }
+
+        return redirect()
+            ->route('vendas.index')
+            ->with('status', 'Venda removida com sucesso.');
     }
 }
