@@ -9,13 +9,15 @@
         <meta property="og:title" content="@yield('title', 'Vendas')">
         <meta property="og:description" content="Sistema de vendas rapido para registrar consumo por cliente com acompanhamento mensal.">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:image" content="{{ asset('favicon.svg') }}">
+        <meta property="og:image" content="{{ asset('icon-512.png') }}">
         <meta name="twitter:card" content="summary">
         <meta name="twitter:title" content="@yield('title', 'Vendas')">
         <meta name="twitter:description" content="Sistema de vendas rapido para registrar consumo por cliente com acompanhamento mensal.">
-        <meta name="twitter:image" content="{{ asset('favicon.svg') }}">
+        <meta name="twitter:image" content="{{ asset('icon-512.png') }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-        <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon-192.png') }}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icon-512.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
