@@ -108,6 +108,40 @@ label {
     gap: 6px;
 }
 
+.status-filter-group {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.88);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+}
+
+.status-filter-group legend {
+    padding: 0 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #2a445b;
+}
+
+.status-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #2a445b;
+}
+
+.status-option input[type='radio'] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: #0f6d6d;
+}
+
 input {
     width: 100%;
     border: 1px solid var(--line);
@@ -118,7 +152,22 @@ input {
     color: var(--ink);
 }
 
+select {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--ink);
+}
+
 input:focus {
+    outline: 2px solid rgba(0, 168, 168, 0.45);
+    border-color: transparent;
+}
+
+select:focus {
     outline: 2px solid rgba(0, 168, 168, 0.45);
     border-color: transparent;
 }
@@ -173,8 +222,126 @@ button {
     color: #4d677f;
 }
 
+.sale-meta-row {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sale-status {
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 4px 10px;
+    border: 1px solid;
+}
+
+.sale-status .material-symbols-rounded {
+    font-size: 14px;
+}
+
+.sale-status.paid {
+    color: #0b7a63;
+    border-color: rgba(11, 122, 99, 0.28);
+    background: rgba(11, 122, 99, 0.12);
+}
+
+.sale-status.pending {
+    color: #9a5f00;
+    border-color: rgba(154, 95, 0, 0.24);
+    background: rgba(255, 182, 70, 0.16);
+}
+
 .sale-meta {
     text-align: right;
+}
+
+.sale-actions {
+    margin-top: 0;
+    display: none;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.sale-item.show-actions .sale-actions {
+    display: flex;
+    margin-top: 8px;
+}
+
+.sale-action-btn {
+    border: 1px solid #bdd0de;
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    color: #20506f;
+    background: #eef6ff;
+    box-shadow: none;
+}
+
+.sale-action-btn .material-symbols-rounded {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.sale-action-btn:hover {
+    background: #deeeff;
+    border-color: #9fc2d8;
+}
+
+.sale-action-btn.delete {
+    color: #b42318;
+    border-color: #f2b2a2;
+    background: #fff1ef;
+}
+
+.sale-action-btn.delete:hover {
+    background: #ffe4de;
+    border-color: #ea9080;
+}
+
+.sale-action-btn[data-action='pay'] {
+    color: #0b7a63;
+    border-color: #9ad7c8;
+    background: #e8f8f3;
+}
+
+.sale-action-btn[data-action='pay']:hover {
+    background: #d4f1e8;
+    border-color: #72cbb4;
+}
+
+.sale-action-btn.disabled,
+.sale-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f2f4f7;
+    border-color: #d0d5dd;
+    color: #667085;
+}
+
+.payment-modal-text {
+    margin: 8px 0 10px;
+    color: #2a445b;
+    line-height: 1.45;
+}
+
+.payment-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #0f6d6d, #0a4f79);
+    box-shadow: 0 10px 18px rgba(10, 79, 121, 0.28);
 }
 
 .price {
@@ -235,5 +402,10 @@ button {
     .form-card,
     .list-card {
         border-radius: 24px;
+    }
+
+    .filter-form {
+        grid-template-columns: 170px 190px minmax(0, 1fr);
+        align-items: end;
     }
 }

@@ -40,14 +40,7 @@ class VendaController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Venda registrada com sucesso.',
-                'venda' => [
-                    'id' => $venda->id,
-                    'nome_cliente' => $venda->nome_cliente,
-                    'mes_venda' => $venda->mes_venda,
-                    'valor_consumo' => number_format((float) $venda->valor_consumo, 2, ',', '.'),
-                    'valor_consumo_numero' => number_format((float) $venda->valor_consumo, 2, '.', ''),
-                    'vendido_em' => $venda->vendido_em->format('d/m/Y H:i'),
-                ],
+                'venda' => $this->formatVenda($venda),
             ], 201);
         }
 
@@ -67,16 +60,7 @@ class VendaController extends Controller
             ->latest('vendido_em')
             ->latest('id')
             ->get()
-            ->map(function (Venda $venda) {
-                return [
-                    'id' => $venda->id,
-                    'nome_cliente' => $venda->nome_cliente,
-                    'mes_venda' => $venda->mes_venda,
-                    'valor_consumo' => number_format((float) $venda->valor_consumo, 2, ',', '.'),
-                    'valor_consumo_numero' => number_format((float) $venda->valor_consumo, 2, '.', ''),
-                    'vendido_em' => $venda->vendido_em->format('d/m/Y H:i'),
-                ];
-            })
+            ->map(fn (Venda $venda) => $this->formatVenda($venda))
             ->values();
 
         return response()->json([
@@ -106,6 +90,107 @@ class VendaController extends Controller
         ]);
     }
 
+    public function update(Request $request, Venda $venda): RedirectResponse|JsonResponse
+    {
+        $dados = $request->validate([
+            'mes_venda' => ['required', 'date_format:Y-m'],
+            'nome_cliente' => ['required', 'string', 'max:120'],
+            'valor_consumo' => ['required', 'numeric', 'min:0.01'],
+        ], [
+            'mes_venda.required' => 'Informe o mes da venda.',
+            'mes_venda.date_format' => 'Use o formato correto do mes (AAAA-MM).',
+            'nome_cliente.required' => 'Informe o nome da pessoa.',
+            'valor_consumo.required' => 'Informe o valor do consumo.',
+            'valor_consumo.numeric' => 'Digite um valor numerico valido.',
+        ]);
+
+        $venda->fill($dados)->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Venda atualizada com sucesso.',
+                'venda' => $this->formatVenda($venda->fresh()),
+            ]);
+        }
+
+        return redirect()
+            ->route('vendas.index')
+            ->with('status', 'Venda atualizada com sucesso.');
+    }
+
+    public function pagamentoOpcoes(Venda $venda): JsonResponse
+    {
+        $queryNaoPagas = Venda::query()
+            ->where('nome_cliente', $venda->nome_cliente)
+            ->where('pago', false);
+
+        $naoPagas = (clone $queryNaoPagas)->count();
+        $valorTotalPendente = (clone $queryNaoPagas)->sum('valor_consumo');
+
+        return response()->json([
+            'venda_id' => $venda->id,
+            'nome_cliente' => $venda->nome_cliente,
+            'nao_pagas' => $naoPagas,
+            'valor_total_pendente' => number_format((float) $valorTotalPendente, 2, ',', '.'),
+            'valor_total_pendente_numero' => number_format((float) $valorTotalPendente, 2, '.', ''),
+            'pode_pagar_todos' => $naoPagas > 1,
+            'item_ja_pago' => (bool) $venda->pago,
+        ]);
+    }
+
+    public function pagar(Request $request, Venda $venda): JsonResponse
+    {
+        $dados = $request->validate([
+            'escopo' => ['required', 'in:item,todos'],
+        ], [
+            'escopo.required' => 'Informe como deseja pagar a venda.',
+            'escopo.in' => 'Opcao de pagamento invalida.',
+        ]);
+
+        $agora = now();
+
+        if ($dados['escopo'] === 'item') {
+            if (!$venda->pago) {
+                $venda->forceFill([
+                    'pago' => true,
+                    'pago_em' => $agora,
+                ])->save();
+            }
+
+            $vendaAtualizada = $venda->fresh();
+
+            return response()->json([
+                'message' => 'Venda marcada como paga.',
+                'escopo' => 'item',
+                'venda' => $this->formatVenda($vendaAtualizada),
+                'ids_atualizados' => [$vendaAtualizada->id],
+            ]);
+        }
+
+        $ids = Venda::query()
+            ->where('nome_cliente', $venda->nome_cliente)
+            ->where('pago', false)
+            ->pluck('id')
+            ->values();
+
+        if ($ids->isNotEmpty()) {
+            Venda::query()
+                ->whereIn('id', $ids)
+                ->update([
+                    'pago' => true,
+                    'pago_em' => $agora,
+                    'updated_at' => $agora,
+                ]);
+        }
+
+        return response()->json([
+            'message' => 'Todas as vendas da pessoa foram marcadas como pagas.',
+            'escopo' => 'todos',
+            'nome_cliente' => $venda->nome_cliente,
+            'ids_atualizados' => $ids,
+        ]);
+    }
+
     public function destroy(Request $request, Venda $venda): RedirectResponse|JsonResponse
     {
         $id = $venda->id;
@@ -121,5 +206,19 @@ class VendaController extends Controller
         return redirect()
             ->route('vendas.index')
             ->with('status', 'Venda removida com sucesso.');
+    }
+
+    private function formatVenda(Venda $venda): array
+    {
+        return [
+            'id' => $venda->id,
+            'nome_cliente' => $venda->nome_cliente,
+            'mes_venda' => $venda->mes_venda,
+            'valor_consumo' => number_format((float) $venda->valor_consumo, 2, ',', '.'),
+            'valor_consumo_numero' => number_format((float) $venda->valor_consumo, 2, '.', ''),
+            'vendido_em' => $venda->vendido_em->format('d/m/Y H:i'),
+            'pago' => (bool) $venda->pago,
+            'status' => $venda->pago ? 'Pago' : 'Em aberto',
+        ];
     }
 }
